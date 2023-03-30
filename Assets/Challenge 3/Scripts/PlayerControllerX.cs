@@ -5,9 +5,14 @@ using UnityEngine;
 public class PlayerControllerX : MonoBehaviour
 {
     public bool gameOver;
+    public bool isLowEnough = true;
 
-    public float floatForce;
-    private float gravityModifier = 1.5f;
+    private float floatForce;
+    public float maxFloatForce = 20;
+    public float minFloatForce = 0;
+    public float upperBound = 15;
+    public float lowerBound = 1f;
+    private float gravityModifier = 2.0f;
     private Rigidbody playerRb;
 
     public ParticleSystem explosionParticle;
@@ -16,6 +21,7 @@ public class PlayerControllerX : MonoBehaviour
     private AudioSource playerAudio;
     public AudioClip moneySound;
     public AudioClip explodeSound;
+    public AudioClip groundSound;
 
 
     // Start is called before the first frame update
@@ -24,10 +30,11 @@ public class PlayerControllerX : MonoBehaviour
         playerRb = GetComponent<Rigidbody>();
         playerAudio = GetComponent<AudioSource>();
         Physics.gravity *= gravityModifier;
+        floatForce = maxFloatForce;
 
 
         // Apply a small upward force at the start of the game
-        playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+        playerRb.AddForce(Vector3.up * floatForce, ForceMode.Force);
 
     }
 
@@ -35,9 +42,31 @@ public class PlayerControllerX : MonoBehaviour
     void Update()
     {
         // While space is pressed and player is low enough, float up
-        if (Input.GetKey(KeyCode.Space) && !gameOver)
+        if (Input.GetKey(KeyCode.Space) && isLowEnough && !gameOver)
         {
-            playerRb.AddForce(Vector3.up * floatForce, ForceMode.Impulse);
+            playerRb.AddForce(Vector3.up * floatForce, ForceMode.Force);
+        }
+
+        if (transform.position.y >= upperBound)
+        {
+            isLowEnough = false;
+            //transform.position = new Vector3(transform.position.x, upperBound, transform.position.z);
+            floatForce = minFloatForce;
+            //playerRb.AddForce(Vector3.zero);
+        }
+        else if (transform.position.y < upperBound && transform.position.y >= lowerBound)
+        {
+            floatForce = maxFloatForce;
+            isLowEnough = true;
+        }
+
+        else if (transform.position.y < lowerBound)
+        {
+            floatForce = upperBound;
+            playerRb.AddForce(Vector3.up * floatForce, ForceMode.Impulse);            
+            playerAudio.PlayOneShot(groundSound, 1.0f);
+            
+            //transform.position = new Vector3(transform.position.x, lowerBound, transform.position.z);
         }
     }
 
