@@ -977,8 +977,8 @@ MonoBehaviour:
   isLowEnough: 1
   maxFloatForce: 30
   minFloatForce: 0
-  upperBound: 15
-  lowerBound: 5
+  upperBound: 17
+  lowerBound: 1
   explosionParticle: {fileID: 1171260740}
   fireworksParticle: {fileID: 66121944}
   moneySound: {fileID: 8300000, guid: af9f934eb4288464eb120a5857921cc3, type: 3}
@@ -1224,7 +1224,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
