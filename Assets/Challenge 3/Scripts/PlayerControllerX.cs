@@ -8,9 +8,9 @@ public class PlayerControllerX : MonoBehaviour
     public bool isLowEnough = true;
 
     private float floatForce;
-    public float maxFloatForce = 20;
+    public float maxFloatForce = 30;
     public float minFloatForce = 0;
-    public float upperBound = 15;
+    public float upperBound = 17;
     public float lowerBound = 1f;
     private float gravityModifier = 2.0f;
     private Rigidbody playerRb;
@@ -50,22 +50,27 @@ public class PlayerControllerX : MonoBehaviour
         if (transform.position.y >= upperBound)
         {
             isLowEnough = false;
-            //transform.position = new Vector3(transform.position.x, upperBound, transform.position.z);
+            playerRb.AddForce(Vector3.down * lowerBound, ForceMode.VelocityChange);
+            transform.position = new Vector3(transform.position.x, upperBound, transform.position.z);
             floatForce = minFloatForce;
-            //playerRb.AddForce(Vector3.zero);
+            //playerRb.mass = gravityModifier;
         }
         else if (transform.position.y < upperBound && transform.position.y >= lowerBound)
         {
-            floatForce = maxFloatForce;
+            floatForce = upperBound;
             isLowEnough = true;
+            playerRb.mass = lowerBound;
         }
 
         else if (transform.position.y < lowerBound)
         {
             floatForce = upperBound;
-            playerRb.AddForce(Vector3.up * floatForce, ForceMode.Impulse);            
-            playerAudio.PlayOneShot(groundSound, 1.0f);
-            
+            playerRb.mass = gravityModifier;
+            playerRb.AddForce(Vector3.up * floatForce, ForceMode.Impulse);
+            if (!gameOver)
+            {
+                playerAudio.PlayOneShot(groundSound, 1.0f);
+            }
             //transform.position = new Vector3(transform.position.x, lowerBound, transform.position.z);
         }
     }
@@ -80,7 +85,8 @@ public class PlayerControllerX : MonoBehaviour
             gameOver = true;
             Debug.Log("Game Over!");
             Destroy(other.gameObject);
-        } 
+            Invoke("DestroyObject", 1.5f);
+        }
 
         // if player collides with money, fireworks
         else if (other.gameObject.CompareTag("Money"))
@@ -88,9 +94,14 @@ public class PlayerControllerX : MonoBehaviour
             fireworksParticle.Play();
             playerAudio.PlayOneShot(moneySound, 1.0f);
             Destroy(other.gameObject);
-
         }
 
     }
+    void DestroyObject()
+    {
+        Destroy(gameObject);
+    }
+
+
 
 }
